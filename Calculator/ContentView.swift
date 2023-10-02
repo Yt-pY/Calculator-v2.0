@@ -133,27 +133,31 @@ struct ContentView: View {
         return Result
     }
     
+    func DoOneCalculation() {
+        if CurrentOperation == .addition {
+            CurrentValue = String(RunningValue + (Double(CurrentValue) ?? 0))
+            CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
+        }
+        if CurrentOperation == .subtract {
+            CurrentValue = String(RunningValue - (Double(CurrentValue) ?? 0))
+            CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
+        }
+        if CurrentOperation == .multiply {
+            CurrentValue = String(RunningValue * (Double(CurrentValue) ?? 0))
+            CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
+        }
+        if CurrentOperation == .divide {
+            CurrentValue = String(RunningValue / (Double(CurrentValue) ?? 0))
+            CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
+        }
+    }
+    
     func TapButton(button: enumButtons) {
         switch button {
         case .addition, .subtract, .multiply, .divide, .equal:
             if button == .addition {
                 if(CurrentOperation != .none) {
-                    if CurrentOperation == .addition {
-                        CurrentValue = String(RunningValue + (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
-                    if CurrentOperation == .subtract {
-                        CurrentValue = String(RunningValue - (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
-                    if CurrentOperation == .multiply {
-                        CurrentValue = String(RunningValue * (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
-                    if CurrentOperation == .divide {
-                        CurrentValue = String(RunningValue / (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
+                    DoOneCalculation()
                 }
                 RunningValue = Double(CurrentValue) ?? 0
                 CurrentOperation = .addition
@@ -161,22 +165,7 @@ struct ContentView: View {
             }
             else if button == .subtract {
                 if(CurrentOperation != .none) {
-                    if CurrentOperation == .addition {
-                        CurrentValue = String(RunningValue + (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
-                    if CurrentOperation == .subtract {
-                        CurrentValue = String(RunningValue - (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
-                    if CurrentOperation == .multiply {
-                        CurrentValue = String(RunningValue * (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
-                    if CurrentOperation == .divide {
-                        CurrentValue = String(RunningValue / (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
+                    DoOneCalculation()
                 }
                 RunningValue = Double(CurrentValue) ?? 0
                 CurrentOperation = .subtract
@@ -184,22 +173,7 @@ struct ContentView: View {
             }
             else if button == .multiply {
                 if(CurrentOperation != .none) {
-                    if CurrentOperation == .addition {
-                        CurrentValue = String(RunningValue + (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
-                    if CurrentOperation == .subtract {
-                        CurrentValue = String(RunningValue - (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
-                    if CurrentOperation == .multiply {
-                        CurrentValue = String(RunningValue * (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
-                    if CurrentOperation == .divide {
-                        CurrentValue = String(RunningValue / (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
+                    DoOneCalculation()
                 }
                 RunningValue = Double(CurrentValue) ?? 0
                 CurrentOperation = .multiply
@@ -207,44 +181,14 @@ struct ContentView: View {
             }
             else if button == .divide {
                 if(CurrentOperation != .none) {
-                    if CurrentOperation == .addition {
-                        CurrentValue = String(RunningValue + (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
-                    if CurrentOperation == .subtract {
-                        CurrentValue = String(RunningValue - (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
-                    if CurrentOperation == .multiply {
-                        CurrentValue = String(RunningValue * (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
-                    if CurrentOperation == .divide {
-                        CurrentValue = String(RunningValue / (Double(CurrentValue) ?? 0))
-                        CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                    }
+                    DoOneCalculation()
                 }
                 RunningValue = Double(CurrentValue) ?? 0
                 CurrentOperation = .divide
                 CurrentValue = "0"
             }
             else if button == .equal {
-                if CurrentOperation == .addition {
-                    CurrentValue = String(RunningValue + (Double(CurrentValue) ?? 0))
-                    CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                }
-                if CurrentOperation == .subtract {
-                    CurrentValue = String(RunningValue - (Double(CurrentValue) ?? 0))
-                    CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                }
-                if CurrentOperation == .multiply {
-                    CurrentValue = String(RunningValue * (Double(CurrentValue) ?? 0))
-                    CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                }
-                if CurrentOperation == .divide {
-                    CurrentValue = String(RunningValue / (Double(CurrentValue) ?? 0))
-                    CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
-                }
+                DoOneCalculation()
                 CurrentOperation = .none
             }
         case .decimal:
