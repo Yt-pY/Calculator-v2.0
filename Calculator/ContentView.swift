@@ -44,8 +44,8 @@ enum enumOperation {
 
 struct ContentView: View {
     
-    @State var CurrentValue = "0"
-    @State var RunningValue:Double = 0
+    @State var CurrentValue = ""
+    @State var RunningValue = ""
     @State var CurrentOperation = enumOperation.none
     
     let Buttons = [
@@ -66,7 +66,7 @@ struct ContentView: View {
                 //--------------------------------------------------------
                 HStack {
                     Spacer()
-                    Text(CurrentValue)
+                    Text(CurrentValue == "" ? RunningValue : CurrentValue)
                         .font(.system(size: 50))
                         .foregroundColor(.white)
                         .bold()
@@ -135,19 +135,19 @@ struct ContentView: View {
     
     func DoOneCalculation() {
         if CurrentOperation == .addition {
-            CurrentValue = String(RunningValue + (Double(CurrentValue) ?? 0))
+            CurrentValue = String((Double(RunningValue) ?? 0) + (Double(CurrentValue) ?? 0))
             CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
         }
         if CurrentOperation == .subtract {
-            CurrentValue = String(RunningValue - (Double(CurrentValue) ?? 0))
+            CurrentValue = String((Double(RunningValue) ?? 0) - (Double(CurrentValue) ?? 0))
             CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
         }
         if CurrentOperation == .multiply {
-            CurrentValue = String(RunningValue * (Double(CurrentValue) ?? 0))
+            CurrentValue = String((Double(RunningValue) ?? 0) * (Double(CurrentValue) ?? 0))
             CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
         }
         if CurrentOperation == .divide {
-            CurrentValue = String(RunningValue / (Double(CurrentValue) ?? 0))
+            CurrentValue = String((Double(RunningValue) ?? 0) / (Double(CurrentValue) ?? 0))
             CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
         }
     }
@@ -155,49 +155,35 @@ struct ContentView: View {
     func TapButton(button: enumButtons) {
         switch button {
         case .addition, .subtract, .multiply, .divide, .equal:
+            if CurrentOperation != .none {
+                DoOneCalculation()
+            }
+            RunningValue = CurrentValue
+            CurrentValue = ""
             if button == .addition {
-                if(CurrentOperation != .none) {
-                    DoOneCalculation()
-                }
-                RunningValue = Double(CurrentValue) ?? 0
                 CurrentOperation = .addition
-                CurrentValue = "0"
             }
             else if button == .subtract {
-                if(CurrentOperation != .none) {
-                    DoOneCalculation()
-                }
-                RunningValue = Double(CurrentValue) ?? 0
                 CurrentOperation = .subtract
-                CurrentValue = "0"
             }
             else if button == .multiply {
-                if(CurrentOperation != .none) {
-                    DoOneCalculation()
-                }
-                RunningValue = Double(CurrentValue) ?? 0
                 CurrentOperation = .multiply
-                CurrentValue = "0"
             }
             else if button == .divide {
-                if(CurrentOperation != .none) {
-                    DoOneCalculation()
-                }
-                RunningValue = Double(CurrentValue) ?? 0
                 CurrentOperation = .divide
-                CurrentValue = "0"
             }
             else if button == .equal {
-                DoOneCalculation()
                 CurrentOperation = .none
             }
         case .decimal:
             CurrentValue += "."
         case .clear:
-            CurrentValue = "0"
+            CurrentValue = ""
+            RunningValue = ""
+            CurrentOperation = .none
         default:
             let num = button.rawValue
-            if CurrentValue == "0" {
+            if CurrentValue == "" {
                 CurrentValue = num
             }
             else {
