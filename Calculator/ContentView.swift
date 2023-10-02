@@ -156,6 +156,21 @@ struct ContentView: View {
         switch button {
         case .addition, .subtract, .multiply, .divide, .equal:
             if CurrentOperation != .none {
+                if CurrentValue == "" {
+                    if button == .addition {
+                        CurrentOperation = .addition
+                    }
+                    else if button == .subtract {
+                        CurrentOperation = .subtract
+                    }
+                    else if button == .multiply {
+                        CurrentOperation = .multiply
+                    }
+                    else if button == .divide {
+                        CurrentOperation = .divide
+                    }
+                    return
+                }
                 DoOneCalculation()
             }
             RunningValue = CurrentValue
