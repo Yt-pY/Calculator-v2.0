@@ -39,7 +39,7 @@ enum enumButtons: String {
 }
 
 enum enumOperation {
-    case addition, subtract, multiply, divide, none
+    case addition, subtract, multiply, divide, equal, none
 }
 
 struct ContentView: View {
@@ -47,6 +47,7 @@ struct ContentView: View {
     @State var CurrentValue = ""
     @State var RunningValue = ""
     @State var CurrentOperation = enumOperation.none
+    @State var AllClear:Bool = true
     
     let Buttons = [
         [enumButtons.clear, .divide],
@@ -66,10 +67,18 @@ struct ContentView: View {
                 //--------------------------------------------------------
                 HStack {
                     Spacer()
-                    Text(CurrentValue == "" ? RunningValue : CurrentValue)
-                        .font(.system(size: 50))
-                        .foregroundColor(.white)
-                        .bold()
+                    if AllClear == true {                    //在按下Clear后需要显示0，而不是RunningValue
+                        Text("0")
+                            .font(.system(size: 70))
+                            .foregroundColor(.white)
+                            .bold()
+                    }
+                    else {
+                        Text(CurrentValue == "" ? RunningValue : CurrentValue)
+                            .font(.system(size: 70))
+                            .foregroundColor(.white)
+                            .bold()
+                    }
                 }
                 //.border(.white)
                 .padding(16)
@@ -155,6 +164,7 @@ struct ContentView: View {
     func TapButton(button: enumButtons) {
         switch button {
         case .addition, .subtract, .multiply, .divide, .equal:
+            AllClear = false                      //暴力更新按下了其他键后，不需要再显示一个零
             if CurrentOperation != .none {
                 if CurrentValue == "" {
                     if button == .addition {
@@ -169,11 +179,15 @@ struct ContentView: View {
                     else if button == .divide {
                         CurrentOperation = .divide
                     }
+                    else if button == .equal {
+                        CurrentOperation = .equal
+                        //CurrentValue = ""
+                    }
                     return
                 }
                 DoOneCalculation()
             }
-            RunningValue = CurrentValue
+            RunningValue = (CurrentValue == "") ? "0": CurrentValue
             CurrentValue = ""
             if button == .addition {
                 CurrentOperation = .addition
@@ -188,15 +202,24 @@ struct ContentView: View {
                 CurrentOperation = .divide
             }
             else if button == .equal {
-                CurrentOperation = .none
+                CurrentOperation = .equal
+                //CurrentValue = ""
             }
         case .decimal:
-            CurrentValue += "."
+            AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
+            if CurrentValue == "" {
+                CurrentValue = "0."
+            }
+            else {
+                CurrentValue += "."
+            }
         case .clear:
             CurrentValue = ""
             RunningValue = ""
             CurrentOperation = .none
+            AllClear = true                  //已经按下了Clear
         default:
+            AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
             let num = button.rawValue
             if CurrentValue == "" {
                 CurrentValue = num
