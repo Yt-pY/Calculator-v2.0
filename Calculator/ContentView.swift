@@ -48,6 +48,7 @@ struct ContentView: View {
     @State var RunningValue = ""
     @State var CurrentOperation = enumOperation.none
     @State var AllClear:Bool = true
+    @State var onedecimal:Bool = false
     
     let Buttons = [
         [enumButtons.clear, .divide],
@@ -205,8 +206,13 @@ struct ContentView: View {
                 CurrentOperation = .equal
                 //CurrentValue = ""
             }
+            onedecimal = false
         case .decimal:
             AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
+            if onedecimal {
+                return;
+            }
+            onedecimal = true
             if CurrentValue == "" {
                 CurrentValue = "0."
             }
@@ -218,6 +224,7 @@ struct ContentView: View {
             RunningValue = ""
             CurrentOperation = .none
             AllClear = true                  //已经按下了Clear
+            onedecimal = false
         default:
             AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
             let num = button.rawValue
