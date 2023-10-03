@@ -33,7 +33,7 @@ enum enumButtons: String {
         case .clear:
             return .gray
         default:
-            return .purple
+            return .green
         }
     }
 }
@@ -63,7 +63,6 @@ struct ContentView: View {
     var body: some View {
         ZStack() {
             Color.black.edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
-                .border(.white)
             
             VStack {
                 Spacer()
@@ -117,6 +116,11 @@ struct ContentView: View {
     }
     
     func OutputNumber(Value: String) -> String {
+        //不完整数据，如12.，直接返回
+        if Value[Value.index(before: Value.endIndex)] == "." {
+            return Value
+        }
+        
         //只保留六位小数
         let value = Double(Value) ?? 0
         var Result = String(format: "%.10f",value)
