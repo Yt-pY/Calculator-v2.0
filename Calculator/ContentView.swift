@@ -51,8 +51,9 @@ struct ContentView: View {
     @State var onedecimal:Bool = false
     @State var caninputzero = false
     
-    let Buttons = [
-        [enumButtons.clear, .divide],
+    let Buttons: [[enumButtons]] =
+    [
+        [.clear, .divide],
         [.seven, .eight, .nine, .multiply],
         [.four, .five, .six, .subtract],
         [.one, .two, .three, .addition],
@@ -62,6 +63,7 @@ struct ContentView: View {
     var body: some View {
         ZStack() {
             Color.black.edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
+                .border(.white)
             
             VStack {
                 Spacer()
@@ -82,12 +84,11 @@ struct ContentView: View {
                             .bold()
                     }
                 }
-                //.border(.white)
                 .padding(16)
-                //--------------------------------------------------------
+                //---------------------------------------------------
                 
                 //按钮显示
-                //--------------------------------------------------------
+                //---------------------------------------------------
                 ForEach(Buttons, id: \.self) { row in
                     HStack() {
                         ForEach(row, id: \.self) { item in   //枚举所有按钮item
@@ -103,13 +104,12 @@ struct ContentView: View {
                                     )
                                     .background(item.ButtonColor)
                                     .foregroundStyle(.white)
-                                    .cornerRadius(getwidth(item: item))
-                                    //.clipShape(Rectangle())
+                                    .clipShape(RoundedRectangle(cornerSize: CGSize(width: 40, height: 40)))
                                     //.border(.white)
                             })
                         }
                     }
-                    .padding(.bottom,5)
+                    //.padding(.bottom)
                 }
                 //--------------------------------------------------------
             }
@@ -156,50 +156,38 @@ struct ContentView: View {
         }
     }
     
+    func updatecurrentoperation(button: enumButtons) {
+        if button == .addition {
+            CurrentOperation = .addition
+        }
+        else if button == .subtract {
+            CurrentOperation = .subtract
+        }
+        else if button == .multiply {
+            CurrentOperation = .multiply
+        }
+        else if button == .divide {
+            CurrentOperation = .divide
+        }
+        else if button == .equal {
+            CurrentOperation = .equal
+        }
+    }
+    
     func TapButton(button: enumButtons) {
         switch button {
         case .addition, .subtract, .multiply, .divide, .equal:
             AllClear = false                      //暴力更新按下了其他键后，不需要再显示一个零
             if CurrentOperation != .none {
                 if CurrentValue == "" {
-                    if button == .addition {
-                        CurrentOperation = .addition
-                    }
-                    else if button == .subtract {
-                        CurrentOperation = .subtract
-                    }
-                    else if button == .multiply {
-                        CurrentOperation = .multiply
-                    }
-                    else if button == .divide {
-                        CurrentOperation = .divide
-                    }
-                    else if button == .equal {
-                        CurrentOperation = .equal
-                        //CurrentValue = ""
-                    }
+                    updatecurrentoperation(button: button)
                     return
                 }
                 DoOneCalculation()
             }
             RunningValue = (CurrentValue == "") ? "0": CurrentValue
             CurrentValue = ""
-            if button == .addition {
-                CurrentOperation = .addition
-            }
-            else if button == .subtract {
-                CurrentOperation = .subtract
-            }
-            else if button == .multiply {
-                CurrentOperation = .multiply
-            }
-            else if button == .divide {
-                CurrentOperation = .divide
-            }
-            else if button == .equal {
-                CurrentOperation = .equal
-                //CurrentValue = ""
-            }
+            updatecurrentoperation(button: button)
             onedecimal = false
             caninputzero = false
         case .decimal:
@@ -242,15 +230,15 @@ struct ContentView: View {
     
     func getwidth(item: enumButtons) -> CGFloat {
         if item == .zero {
-            return 189//((UIScreen.main.bounds.width - 4*12) / 4) * 2;
+            return CGFloat(Int(UIScreen.main.bounds.width - 50) / 4 * 2)
         }
         if item == .clear {
-            return 287
+            return CGFloat(Int(UIScreen.main.bounds.width - 50) / 4 * 3)
         }
-        return 90//(UIScreen.main.bounds.width - 4*12) / 4
+        return CGFloat(Int(UIScreen.main.bounds.width - 50) / 4)
     }
     func getheight(item: enumButtons) -> CGFloat {
-        return 90//(UIScreen.main.bounds.width - 4*12) / 4
+        return CGFloat(Int(UIScreen.main.bounds.width - 50) / 4)
     }
 }
 
