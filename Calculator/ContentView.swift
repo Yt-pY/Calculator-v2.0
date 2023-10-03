@@ -77,7 +77,7 @@ struct ContentView: View {
                             .bold()
                     }
                     else {
-                        Text((CurrentValue == "") ? OutputNumber(Value: RunningValue) : OutputNumber(Value: CurrentValue))
+                        Text((CurrentValue == "") ? OutputNumber(Value: RunningValue) : CurrentValue)
                             .font(.system(size: 70))
                             .foregroundColor(.white)
                             .bold()
@@ -116,11 +116,6 @@ struct ContentView: View {
     }
     
     func OutputNumber(Value: String) -> String {
-        //不完整数据，如12.，直接返回
-        if Value[Value.index(before: Value.endIndex)] == "." {
-            return Value
-        }
-        
         //只保留六位小数
         let value = Double(Value) ?? 0
         var Result = String(format: "%.10f",value)
