@@ -49,6 +49,7 @@ struct ContentView: View {
     @State var CurrentOperation = enumOperation.none
     @State var AllClear:Bool = true
     @State var onedecimal:Bool = false
+    @State var caninputzero = false
     
     let Buttons = [
         [enumButtons.clear, .divide],
@@ -75,7 +76,7 @@ struct ContentView: View {
                             .bold()
                     }
                     else {
-                        Text(CurrentValue == "" ? RunningValue : CurrentValue)
+                        Text((CurrentValue == "") ? OutputNumber(Value: RunningValue) : OutputNumber(Value: CurrentValue))
                             .font(.system(size: 70))
                             .foregroundColor(.white)
                             .bold()
@@ -115,25 +116,22 @@ struct ContentView: View {
         }
     }
     
-    func FixCurrentNumber(CurrentValue: String) -> String {
+    func OutputNumber(Value: String) -> String {
         //只保留六位小数
-        /*var decimalid:Int
-        for decimalid in 0...CurrentValue.count {
-            
-        }
-        */
+        let value = Double(Value) ?? 0
+        var Result = String(format: "%.10f",value)
+        
         //删除多余零
         var metdecimal:Bool = false
-        for character in CurrentValue {
+        for character in Result {
             if character == "." {
                 metdecimal = true
                 break
             }
         }
         if !metdecimal {
-            return CurrentValue
+            return Result
         }
-        var Result = CurrentValue
         while Result[Result.index(before: Result.endIndex)] == "0" {
             Result.removeLast()
         }
@@ -146,19 +144,15 @@ struct ContentView: View {
     func DoOneCalculation() {
         if CurrentOperation == .addition {
             CurrentValue = String((Double(RunningValue) ?? 0) + (Double(CurrentValue) ?? 0))
-            CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
         }
         if CurrentOperation == .subtract {
             CurrentValue = String((Double(RunningValue) ?? 0) - (Double(CurrentValue) ?? 0))
-            CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
         }
         if CurrentOperation == .multiply {
             CurrentValue = String((Double(RunningValue) ?? 0) * (Double(CurrentValue) ?? 0))
-            CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
         }
         if CurrentOperation == .divide {
             CurrentValue = String((Double(RunningValue) ?? 0) / (Double(CurrentValue) ?? 0))
-            CurrentValue = FixCurrentNumber(CurrentValue: CurrentValue)
         }
     }
     
@@ -207,6 +201,7 @@ struct ContentView: View {
                 //CurrentValue = ""
             }
             onedecimal = false
+            caninputzero = false
         case .decimal:
             AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
             if onedecimal {
@@ -219,20 +214,28 @@ struct ContentView: View {
             else {
                 CurrentValue += "."
             }
+            caninputzero = true
         case .clear:
             CurrentValue = ""
             RunningValue = ""
             CurrentOperation = .none
             AllClear = true                  //已经按下了Clear
             onedecimal = false
+            caninputzero = false
         default:
             AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
             let num = button.rawValue
-            if CurrentValue == "" {
-                CurrentValue = num
+            if caninputzero {
+                CurrentValue = CurrentValue + num
             }
             else {
-                CurrentValue = CurrentValue + num
+                if num != "0" {
+                    caninputzero = true
+                    CurrentValue =  num
+                }
+                else {
+                    CurrentValue = "0"
+                }
             }
         }
     }
@@ -248,9 +251,7 @@ struct ContentView: View {
     }
     func getheight(item: enumButtons) -> CGFloat {
         return 90//(UIScreen.main.bounds.width - 4*12) / 4
-        
     }
-    
 }
 
 #Preview {
