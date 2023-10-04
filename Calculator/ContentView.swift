@@ -26,11 +26,14 @@ enum enumButtons: String {
     case clear = "AC"
     case equal = "🟰"
     
+    case percent = "％"
+    case reverse = "+/-"
+    
     var ButtonColor: Color {
         switch self{
         case .addition, .subtract, .multiply, .divide, .equal:
             return .orange
-        case .clear:
+        case .clear, .percent, .reverse:
             return .gray
         default:
             return .green
@@ -53,7 +56,7 @@ struct ContentView: View {
     
     let Buttons: [[enumButtons]] =
     [
-        [.clear, .divide],
+        [.clear, .reverse, .percent, .divide],
         [.seven, .eight, .nine, .multiply],
         [.four, .five, .six, .subtract],
         [.one, .two, .three, .addition],
@@ -72,13 +75,13 @@ struct ContentView: View {
                     Spacer()
                     if AllClear == true {                    //在按下Clear后需要显示0，而不是RunningValue
                         Text("0")
-                            .font(.system(size: 70))
+                            .font(.system(size: 55))
                             .foregroundColor(.white)
                             .bold()
                     }
                     else {
                         Text((CurrentValue == "") ? OutputNumber(Value: RunningValue) : CurrentValue)
-                            .font(.system(size: 70))
+                            .font(.system(size: 55))
                             .foregroundColor(.white)
                             .bold()
                     }
@@ -118,7 +121,7 @@ struct ContentView: View {
     func OutputNumber(Value: String) -> String {
         //只保留六位小数
         let value = Double(Value) ?? 0
-        var Result = String(format: "%.10f",value)
+        var Result = String(format: "%.8f",value)
         
         //删除多余零
         var metdecimal:Bool = false
@@ -209,6 +212,29 @@ struct ContentView: View {
             AllClear = true                  //已经按下了Clear
             onedecimal = false
             caninputzero = false
+        case .percent:
+            if CurrentValue == "" && RunningValue == "" {
+                return
+            }
+            else if CurrentValue != ""{
+                CurrentValue = String((Double(CurrentValue) ?? 0) * 0.01)
+                CurrentValue = OutputNumber(Value: CurrentValue)
+            }
+            else {
+                RunningValue = String((Double(RunningValue) ?? 0) * 0.01)
+            }
+        case .reverse:
+            if CurrentValue == "" && RunningValue == "" {
+                return
+            }
+            else if CurrentValue != ""{
+                CurrentValue = String(-(Double(CurrentValue) ?? 0))
+                CurrentValue = OutputNumber(Value: CurrentValue)
+            }
+            else {
+                RunningValue = String(-(Double(RunningValue) ?? 0))
+            }
+            
         default:
             AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
             let num = button.rawValue
@@ -231,9 +257,9 @@ struct ContentView: View {
         if item == .zero {
             return CGFloat(Int(UIScreen.main.bounds.width - 50) / 4 * 2)
         }
-        if item == .clear {
+        /*if item == .clear {
             return CGFloat(Int(UIScreen.main.bounds.width - 50) / 4 * 3)
-        }
+        }*/
         return CGFloat(Int(UIScreen.main.bounds.width - 50) / 4)
     }
     func getheight(item: enumButtons) -> CGFloat {
