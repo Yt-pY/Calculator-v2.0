@@ -59,6 +59,7 @@ struct ContentView: View {
     @State var AllClear:Bool = true
     @State var onedecimal:Bool = false
     @State var caninputzero = false
+    @State var after1op = false
     
     let Buttons: [[enumButtons]] =
     [
@@ -208,8 +209,14 @@ struct ContentView: View {
             updatecurrentoperation(button: button)
             onedecimal = false
             caninputzero = false
+            after1op = false
         case .decimal:
             AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
+            
+            if after1op {
+                return
+            }
+            
             if onedecimal {
                 return;
             }
@@ -228,6 +235,7 @@ struct ContentView: View {
             AllClear = true                  //已经按下了Clear
             onedecimal = false
             caninputzero = false
+            after1op = false
         case .percent:
             if CurrentValue == "" && RunningValue == "" {
                 return
@@ -241,6 +249,7 @@ struct ContentView: View {
                 //RunningValue = ""
                 CurrentOperation = .none
             }
+            after1op = true
         case .reverse:
             if CurrentValue == "" && RunningValue == "" {
                 return
@@ -254,6 +263,7 @@ struct ContentView: View {
                 //RunningValue = ""
                 CurrentOperation = .none
             }
+            after1op = true
         case .powhalf:
             if CurrentValue == "" && RunningValue == "" {
                 return
@@ -267,6 +277,7 @@ struct ContentView: View {
                 //RunningValue = ""
                 CurrentOperation = .none
             }
+            after1op = true
         case .powneg1:
             if CurrentValue == "" && RunningValue == "" {
                 return
@@ -275,11 +286,12 @@ struct ContentView: View {
                 CurrentValue = String(1.0 / (Double(CurrentValue) ?? 0))
             }
             else {
-                RunningValue = String(1 / (Double(RunningValue) ?? 0))
+                RunningValue = String(1.0 / (Double(RunningValue) ?? 0))
                 CurrentValue = RunningValue
                 //RunningValue = ""
                 CurrentOperation = .none
             }
+            after1op = true
         case .powtwo:
             if CurrentValue == "" && RunningValue == "" {
                 return
@@ -293,6 +305,7 @@ struct ContentView: View {
                 //RunningValue = ""
                 CurrentOperation = .none
             }
+            after1op = true
         case .sin:
             if CurrentValue == "" && RunningValue == "" {
                 return
@@ -306,10 +319,14 @@ struct ContentView: View {
                 //RunningValue = ""
                 CurrentOperation = .none
             }
-            
-            
+            after1op = true
         default:
             AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
+            
+            if after1op {
+                return;
+            }
+            
             let num = button.rawValue
             if caninputzero {
                 CurrentValue = CurrentValue + num
