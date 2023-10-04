@@ -28,13 +28,19 @@ enum enumButtons: String {
     
     case percent = "％"
     case reverse = "+/-"
+    case powhalf = "√x"
+    case powneg1 = "1/x"
+    case powtwo = "x²"
+    case sin = "sin"
     
     var ButtonColor: Color {
         switch self{
         case .addition, .subtract, .multiply, .divide, .equal:
             return .orange
-        case .clear, .percent, .reverse:
+        case .percent, .reverse, .powhalf, .powneg1, .powtwo, .sin:
             return .gray
+        case .clear:
+            return .purple
         default:
             return .green
         }
@@ -56,7 +62,8 @@ struct ContentView: View {
     
     let Buttons: [[enumButtons]] =
     [
-        [.clear, .reverse, .percent, .divide],
+        [.clear, .powtwo, .powhalf, .sin],
+        [.powneg1, .reverse, .percent, .divide],
         [.seven, .eight, .nine, .multiply],
         [.four, .five, .six, .subtract],
         [.one, .two, .three, .addition],
@@ -80,7 +87,7 @@ struct ContentView: View {
                             .bold()
                     }
                     else {
-                        Text((CurrentValue == "") ? OutputNumber(Value: RunningValue) : CurrentValue)
+                        Text((CurrentValue == "") ? OutputNumber(Value: RunningValue) : OutputNumber(Value: CurrentValue))
                             .font(.system(size: 55))
                             .foregroundColor(.white)
                             .bold()
@@ -94,6 +101,7 @@ struct ContentView: View {
                 ForEach(Buttons, id: \.self) { row in
                     HStack() {
                         ForEach(row, id: \.self) { item in   //枚举所有按钮item
+                            Spacer()
                             Button(action: {                 //使用Button封装
                                 TapButton(button: item)      //按下按钮后的逻辑
                             }, label: { //按钮UI
@@ -106,12 +114,13 @@ struct ContentView: View {
                                     )
                                     .background(item.ButtonColor)
                                     .foregroundStyle(.white)
-                                    .clipShape(RoundedRectangle(cornerSize: CGSize(width: 40, height: 40)))
+                                    .clipShape(RoundedRectangle(cornerSize: CGSize(width: 35, height: 35)))
                                     //.border(.white)
                             })
                         }
+                        Spacer()
                     }
-                    //.padding(.bottom)
+                    .padding(.bottom, 1)
                 }
                 //--------------------------------------------------------
             }
@@ -119,6 +128,13 @@ struct ContentView: View {
     }
     
     func OutputNumber(Value: String) -> String {
+        if Value[Value.index(before: Value.endIndex)] == "." {
+            return Value
+        }
+        if Value[Value.index(before: Value.endIndex)] == "0" && onedecimal {
+            return Value
+        }
+        
         //只保留六位小数
         let value = Double(Value) ?? 0
         var Result = String(format: "%.8f",value)
@@ -218,10 +234,12 @@ struct ContentView: View {
             }
             else if CurrentValue != ""{
                 CurrentValue = String((Double(CurrentValue) ?? 0) * 0.01)
-                CurrentValue = OutputNumber(Value: CurrentValue)
             }
             else {
                 RunningValue = String((Double(RunningValue) ?? 0) * 0.01)
+                CurrentValue = RunningValue
+                //RunningValue = ""
+                CurrentOperation = .none
             }
         case .reverse:
             if CurrentValue == "" && RunningValue == "" {
@@ -229,11 +247,66 @@ struct ContentView: View {
             }
             else if CurrentValue != ""{
                 CurrentValue = String(-(Double(CurrentValue) ?? 0))
-                CurrentValue = OutputNumber(Value: CurrentValue)
             }
             else {
                 RunningValue = String(-(Double(RunningValue) ?? 0))
+                CurrentValue = RunningValue
+                //RunningValue = ""
+                CurrentOperation = .none
             }
+        case .powhalf:
+            if CurrentValue == "" && RunningValue == "" {
+                return
+            }
+            else if CurrentValue != ""{
+                CurrentValue = String(sqrt(Double(CurrentValue) ?? 0))
+            }
+            else {
+                RunningValue = String(sqrt(Double(RunningValue) ?? 0))
+                CurrentValue = RunningValue
+                //RunningValue = ""
+                CurrentOperation = .none
+            }
+        case .powneg1:
+            if CurrentValue == "" && RunningValue == "" {
+                return
+            }
+            else if CurrentValue != ""{
+                CurrentValue = String(1.0 / (Double(CurrentValue) ?? 0))
+            }
+            else {
+                RunningValue = String(1 / (Double(RunningValue) ?? 0))
+                CurrentValue = RunningValue
+                //RunningValue = ""
+                CurrentOperation = .none
+            }
+        case .powtwo:
+            if CurrentValue == "" && RunningValue == "" {
+                return
+            }
+            else if CurrentValue != ""{
+                CurrentValue = String(pow((Double(CurrentValue) ?? 0), 2))
+            }
+            else {
+                RunningValue = String(pow((Double(RunningValue) ?? 0), 2))
+                CurrentValue = RunningValue
+                //RunningValue = ""
+                CurrentOperation = .none
+            }
+        case .sin:
+            if CurrentValue == "" && RunningValue == "" {
+                return
+            }
+            else if CurrentValue != ""{
+                CurrentValue = String(sin((Double(CurrentValue) ?? 0) * acos(-1) / 180))
+            }
+            else {
+                RunningValue = String(sin((Double(RunningValue) ?? 0) * acos(-1) / 180))
+                CurrentValue = RunningValue
+                //RunningValue = ""
+                CurrentOperation = .none
+            }
+            
             
         default:
             AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
@@ -255,15 +328,12 @@ struct ContentView: View {
     
     func getwidth(item: enumButtons) -> CGFloat {
         if item == .zero {
-            return CGFloat(Int(UIScreen.main.bounds.width - 50) / 4 * 2)
+            return CGFloat((UIScreen.main.bounds.width - 50) / 4 * 2 + 10)
         }
-        /*if item == .clear {
-            return CGFloat(Int(UIScreen.main.bounds.width - 50) / 4 * 3)
-        }*/
-        return CGFloat(Int(UIScreen.main.bounds.width - 50) / 4)
+        return CGFloat((UIScreen.main.bounds.width - 50) / 4)
     }
     func getheight(item: enumButtons) -> CGFloat {
-        return CGFloat(Int(UIScreen.main.bounds.width - 50) / 4)
+        return CGFloat((UIScreen.main.bounds.width - 20) / 5)
     }
 }
 
