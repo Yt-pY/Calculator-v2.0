@@ -33,6 +33,11 @@ enum enumButtons: String {
     case powtwo = "x²"
     case sin = "sin"
     
+    case mc = "mc"
+    case madd = "m+"
+    case msub = "m-"
+    case mr = "mr"
+    
     var ButtonColor: Color {
         switch self{
         case .addition, .subtract, .multiply, .divide, .equal:
@@ -41,6 +46,8 @@ enum enumButtons: String {
             return .gray
         case .clear:
             return .purple
+        case .mc, .madd, .msub, .mr:
+            return .red
         default:
             return .green
         }
@@ -61,8 +68,11 @@ struct ContentView: View {
     @State var caninputzero = false
     @State var after1op = false
     
+    @State var memory:Double = 0
+    
     let Buttons: [[enumButtons]] =
     [
+        [.mc, .madd, .msub, .mr],
         [.clear, .powtwo, .powhalf, .sin],
         [.powneg1, .reverse, .percent, .divide],
         [.seven, .eight, .nine, .multiply],
@@ -102,7 +112,7 @@ struct ContentView: View {
                 ForEach(Buttons, id: \.self) { row in
                     HStack() {
                         ForEach(row, id: \.self) { item in   //枚举所有按钮item
-                            Spacer()
+                            //Spacer()
                             Button(action: {                 //使用Button封装
                                 TapButton(button: item)      //按下按钮后的逻辑
                             }, label: { //按钮UI
@@ -119,7 +129,7 @@ struct ContentView: View {
                                     //.border(.white)
                             })
                         }
-                        Spacer()
+                        //Spacer()
                     }
                     .padding(.bottom, 1)
                 }
@@ -320,6 +330,31 @@ struct ContentView: View {
                 CurrentOperation = .none
             }
             after1op = true
+        
+        case .mc:
+            memory = 0
+        case .madd:
+            if CurrentValue == "" {
+                memory += Double(RunningValue) ?? 0
+            }
+            else {
+                memory += Double(CurrentValue) ?? 0
+            }
+        case .msub:
+            if CurrentValue == "" {
+                memory -= Double(RunningValue) ?? 0
+            }
+            else {
+                memory -= Double(CurrentValue) ?? 0
+            }
+        case .mr:
+            AllClear = false
+            if RunningValue != "" && CurrentValue == "" && CurrentOperation == .equal {
+                RunningValue = String(memory)
+            }
+            else {
+                CurrentValue = String(memory)
+            }
         default:
             AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
             
@@ -345,12 +380,12 @@ struct ContentView: View {
     
     func getwidth(item: enumButtons) -> CGFloat {
         if item == .zero {
-            return CGFloat((UIScreen.main.bounds.width - 50) / 4 * 2 + 10)
+            return CGFloat((UIScreen.main.bounds.width - 60) / 4 * 2 + 7)
         }
-        return CGFloat((UIScreen.main.bounds.width - 50) / 4)
+        return CGFloat((UIScreen.main.bounds.width - 60) / 4)
     }
     func getheight(item: enumButtons) -> CGFloat {
-        return CGFloat((UIScreen.main.bounds.width - 20) / 5)
+        return CGFloat((UIScreen.main.bounds.height - 380) / 7)
     }
 }
 
