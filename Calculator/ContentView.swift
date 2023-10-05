@@ -53,10 +53,10 @@ enum enumOperation {
 
 struct ContentView: View {
     
-    @State var CurrentValue = ""
-    @State var RunningValue = ""
+    @AppStorage("CurrentValue") var CurrentValue = ""
+    @AppStorage("RunningValue") var RunningValue = ""
     @State var CurrentOperation = enumOperation.none
-    @State var AllClear:Bool = true
+    @State var AllClear:Bool = false
     @State var onedecimal:Bool = false
     @State var caninputzero = false
     @State var after1op = false
@@ -81,7 +81,7 @@ struct ContentView: View {
                 //--------------------------------------------------------
                 HStack {
                     Spacer()
-                    if AllClear == true {                    //在按下Clear后需要显示0，而不是RunningValue
+                    if AllClear == true || (RunningValue == "" && CurrentValue == ""){                    //在按下Clear后需要显示0，而不是RunningValue
                         Text("0")
                             .font(.system(size: 55))
                             .foregroundColor(.white)
