@@ -69,6 +69,7 @@ struct ContentView: View {
     @State var after1op = false
     
     @State var memory:Double = 0
+    @State var canrewrite = false
     
     let Buttons: [[enumButtons]] =
     [
@@ -355,11 +356,18 @@ struct ContentView: View {
             else {
                 CurrentValue = String(memory)
             }
+            canrewrite = true
         default:
             AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
             
             if after1op {
                 return;
+            }
+            
+            if canrewrite {
+                CurrentValue = button.rawValue
+                canrewrite = false
+                return
             }
             
             let num = button.rawValue
