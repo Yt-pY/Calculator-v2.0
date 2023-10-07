@@ -123,6 +123,7 @@ struct ContentView: View {
                     })
                     .padding(.horizontal)
                     //.border(.white)
+                    .padding(20)
                     Spacer()
                 }
                 
