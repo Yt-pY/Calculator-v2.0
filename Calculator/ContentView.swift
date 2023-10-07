@@ -18,6 +18,18 @@ enum enumButtons: String {
     case eight = "8"
     case nine = "9"
     case zero = "0"
+    
+    case Cone = "壹"
+    case Ctwo = "贰"
+    case Cthree = "叁"
+    case Cfour = "肆"
+    case Cfive = "伍"
+    case Csix = "陆"
+    case Cseven = "柒"
+    case Ceight = "捌"
+    case Cnine = "玖"
+    case Czero = "零"
+    
     case decimal = "."
     case addition = "➕"
     case subtract = "➖"
@@ -82,11 +94,38 @@ struct ContentView: View {
         [.zero, .decimal, .equal]
     ]
     
+    @AppStorage("EorC") var EorC:Int = 0
+    
+    let CButtons: [[enumButtons]] =
+    [
+        [.mc, .madd, .msub, .mr],
+        [.clear, .powtwo, .powhalf, .sin],
+        [.powneg1, .reverse, .percent, .divide],
+        [.Cseven, .Ceight, .Cnine, .multiply],
+        [.Cfour, .Cfive, .Csix, .subtract],
+        [.Cone, .Ctwo, .Cthree, .addition],
+        [.Czero, .decimal, .equal]
+    ]
+    
     var body: some View {
         ZStack() {
             Color.black.edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
             
             VStack {
+                HStack {
+                    Button(action: {
+                        EorC ^= 1
+                    }, label: {
+                        Image(systemName: (EorC == 0) ? "arrow.2.circlepath.circle" : "arrow.2.circlepath.circle.fill")
+                            .resizable()
+                            .frame(width: 50, height: 50)
+                            .foregroundStyle(.white)
+                    })
+                    .padding(.horizontal)
+                    //.border(.white)
+                    Spacer()
+                }
+                
                 Spacer()
                 //计算数值显示
                 //--------------------------------------------------------
@@ -110,10 +149,9 @@ struct ContentView: View {
                 
                 //按钮显示
                 //---------------------------------------------------
-                ForEach(Buttons, id: \.self) { row in
+                ForEach((EorC == 0) ? Buttons : CButtons, id: \.self) { row in
                     HStack() {
                         ForEach(row, id: \.self) { item in   //枚举所有按钮item
-                            //Spacer()
                             Button(action: {                 //使用Button封装
                                 TapButton(button: item)      //按下按钮后的逻辑
                             }, label: { //按钮UI
@@ -127,16 +165,17 @@ struct ContentView: View {
                                     .background(item.ButtonColor)
                                     .foregroundStyle(.white)
                                     .clipShape(RoundedRectangle(cornerSize: CGSize(width: 35, height: 35)))
+                                    .animation(/*@START_MENU_TOKEN@*/.easeIn/*@END_MENU_TOKEN@*/, value: 2)
                                     //.border(.white)
                             })
                         }
-                        //Spacer()
                     }
                     .padding(.bottom, 1)
                 }
                 //--------------------------------------------------------
             }
         }
+        //.border(.white)
     }
     
     func OutputNumber(Value: String) -> String {
@@ -369,9 +408,43 @@ struct ContentView: View {
                 canrewrite = false
                 return
             }
-            
-            let num = button.rawValue
+            var num = button.rawValue
+            if button.rawValue == "壹" {
+                num = "1"
+            }
+            else if button.rawValue == "贰" {
+                num = "2"
+            }
+            else if button.rawValue == "叁" {
+                num = "3"
+            }
+            else if button.rawValue == "肆" {
+                num = "4"
+            }
+            else if button.rawValue == "伍" {
+                num = "5"
+            }
+            else if button.rawValue == "陆" {
+                num = "6"
+            }
+            else if button.rawValue == "柒" {
+                num = "7"
+            }
+            else if button.rawValue == "捌" {
+                num = "8"
+            }
+            else if button.rawValue == "玖" {
+                num = "9"
+            }
+            else if button.rawValue == "零" {
+                num = "0"
+            }
             if caninputzero {
+                
+                if CurrentValue.count > 9 {
+                    return
+                }
+                
                 CurrentValue = CurrentValue + num
             }
             else {
@@ -387,7 +460,7 @@ struct ContentView: View {
     }
     
     func getwidth(item: enumButtons) -> CGFloat {
-        if item == .zero {
+        if item == .zero || item == .Czero {
             return CGFloat((UIScreen.main.bounds.width - 60) / 4 * 2 + 7)
         }
         return CGFloat((UIScreen.main.bounds.width - 60) / 4)
