@@ -261,6 +261,9 @@ struct ContentView: View {
             onedecimal = false
             caninputzero = false
             after1op = false
+            
+            canrewrite = false
+            
         case .decimal:
             AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
             
@@ -272,6 +275,13 @@ struct ContentView: View {
                 return;
             }
             onedecimal = true
+            
+            if canrewrite {
+                CurrentValue = "0."
+                canrewrite = false
+                return
+            }
+            
             if CurrentValue == "" {
                 CurrentValue = "0."
             }
@@ -397,6 +407,7 @@ struct ContentView: View {
                 CurrentValue = String(memory)
             }
             canrewrite = true
+            onedecimal = false
         default:
             AllClear = false                 //暴力更新按下了其他键后，不需要再显示一个零
             
@@ -451,7 +462,7 @@ struct ContentView: View {
             else {
                 if num != "0" {
                     caninputzero = true
-                    CurrentValue =  num
+                    CurrentValue = CurrentValue + num
                 }
                 else {
                     CurrentValue = "0"
